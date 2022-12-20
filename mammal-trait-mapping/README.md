@@ -1,4 +1,4 @@
-To run the notebook 'mammal-trait-mapping/mammal-trait-mapping-template.ipynb', the following libraries need to be installed:
+To run the notebook 'notebooks/mammal-trait-mapping-template.ipynb', the following libraries need to be installed:
 <dl>
   <dt>pandas</dt>
   <dt>geopandas</dt>
