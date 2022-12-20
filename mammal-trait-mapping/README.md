@@ -1,4 +1,4 @@
-##Mapping georeferenced mammal traits
+Mapping georeferenced mammal traits
 
 This workspace is for generating workflows for working with mammal trait data (in this case, we will be working with population density estimates for island mammal species).
 
