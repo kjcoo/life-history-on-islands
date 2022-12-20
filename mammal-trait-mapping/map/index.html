@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Island Mammal Population Densities in Indonesia</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 540px;
+    }
+
+
+    /* Small devices (landscape phones, 576px and up) */
+    @media (min-width: 576px) {}
+
+    /* Medium devices (tablets, 768px and up) */
+    @media (min-width: 768px) {
+
+      aside {
+        height: 540px;
+      }
+    }
+
+    /* Large devices (desktops, 992px and up) */
+    @media (min-width: 992px) {}
+
+    /* Extra large devices (large desktops, 1200px and up) */
+    @media (min-width: 1200px) {}
+  </style>
+</head>
+
+<body class="bg-dark">
+
+  <div class="container-fluid">
+    <header class="row text-white py-3">
+      <div class="col mx-2">
+        <h1 class="">Island Mammal Population Densities in Indonesia</h1>
+      </div>
+    </header>
+
+    <section class="row">
+      <div class="col-12 col-md-8 col-lg-9 px-0">
+        <div id="map"></div>
+      </div>
+      <aside id="about" class="col-12 col-md-4 col-lg-3 text-white py-2 bg-secondary overflow-auto">
+        <section>
+          <h2>Island biogeography is really neat!</h2>
+          <p>One interesting question in island biogeography is how population densities might vary on islands across different mammal groups.</p>
+		  <p>Each dot here is an estimation of population density for a given species. Hover over a dot to see the taxonomic order, or click on the dot to see the estimation of # individuals per square kilometer.</p>
+        </section>
+      </aside>
+    </section>
+    <footer class="row text-white py-3">
+      <div class="col mx-2">
+        <ul class="list-unstyled">
+          <li>Map authored by <a href="https://github.com/kjcoo">Kimberly Cook</a></li>
+          <li>December 2022</li>
+          <li>data source: <a href="https://figshare.com/articles/dataset/TetraDENSITY_Population_Density_dataset/5371633">TetraDENSITY, a global dataset of georeferenced population density estimates for tetrapods.</a></li>
+        </ul>
+      </div>
+    </footer>
+  </div>
+
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script>
+    // initial map options
+    const options = {
+      center: [5, 115],
+      zoom: 4.5,
+      zoomSnap: .1
+    }
+
+    // instantiate the Leaflet map
+    const map = L.map('map', options);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    }).addTo(map);
+
+    // load the data and send to drawMap function
+    d3.json('data/mammals_indo.json').then(drawMap);
+
+    function drawMap(data) {
+
+      // create a Leaflet GeoJSON object using the data and add it to the map
+      const mammals = L.geoJson(data, {
+	  onEachFeature: function (feature, layer) {
+			if (feature.properties && feature.properties.Density) {
+                layer.bindPopup(feature.properties.Density);
+            }
+			},
+        pointToLayer: function (feature, ll) {
+          return L.circleMarker(ll, {
+            color: 'orange',
+            radius: 2,
+			
+          });
+        }
+      }).addTo(map);
+
+      //for each density estimate,
+      mammals.eachLayer((layer) => {
+
+        // return the taxonomic order
+        let mammalOrder = layer.feature.properties.Order_;
+
+        // and bind the taxonomic order to a tool tip
+        layer.bindTooltip(mammalOrder)
+      });
+    }
+  </script>
+</body>
+
+</html>
